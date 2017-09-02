@@ -6,6 +6,9 @@ public class GdriveResult {
 
 	}
 	
+	
+	
+	
 	public GdriveResult(String resultMessage) {
        this.resultMessage=resultMessage;
 	}
