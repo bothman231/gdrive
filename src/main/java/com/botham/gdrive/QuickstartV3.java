@@ -31,11 +31,16 @@ public class QuickstartV3 {
     
     private static final String APPLICATION_NAME = "Drive API Java Quickstart";
     
-    private static final String GDRIVE_USER = "fncserver";
+    //private static final String GDRIVE_USER = "fncserver";
     //private static final String GDRIVE_USER = "231saleln";
+    private static final String GDRIVE_USER = "kryten4813";
+    //private static final String GDRIVE_USER = "petersen4813";
+    //private static final String GDRIVE_USER = "bluemidget4813";
 
     /** Directory to store user credentials for this application. */
     private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/"+GDRIVE_USER);
+    
+    private static final java.io.File DATA_STORE_DIR1 = new java.io.File(System.getProperty("user.home"), ".credentials/"+GDRIVE_USER);
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;
@@ -54,51 +59,7 @@ public class QuickstartV3 {
     private static final List<String> SCOPES = Arrays.asList(DriveScopes.DRIVE);
     
     private static final boolean DELETE_STORE = false;
-    
-
-/*
-    static {
-        try {
-        	String mName="static";
-        	
-        	if (log.isDebugEnabled()) {
-        	   log.debug(mName+" Starts");
-        	}
-            
-        	if (DELETE_STORE) {
-        	   java.io.File credentialFile = new java.io.File(DATA_STORE_DIR+"/"+"StoredCredential");
-        	
-               if (credentialFile.exists()) {
-                  if (log.isDebugEnabled()) {
-             	     log.debug(mName+" remove "+credentialFile.getPath());
-             	  }
-            	  credentialFile.delete();
-               } else {
-               }
-            } else {
-               
-            }
-        	
-            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            
-            DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-
-            
-            
-            
-            
-            
-        	if (log.isDebugEnabled()) {
-         	   log.debug(mName+" Ends");
-         	}
-        } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
-        }
-    }
-*/
-    
-    
+   
     
 	public static void dataStore(String user) {
 		String mName="dataStore";
@@ -167,7 +128,7 @@ public class QuickstartV3 {
     		log.debug(mName+" Loading client secs from "+jsonFile);
     	}
     	
-    	java.io.File file = new java.io.File(jsonFile);
+    	//java.io.File file = new java.io.File(jsonFile);
     	
     	/*
     	if (file.exists()) {
@@ -189,6 +150,7 @@ public class QuickstartV3 {
         
     	if (log.isDebugEnabled()) {
     		log.debug(mName+" clientSecrets="+clientSecrets);
+    		log.debug(mName+" "+clientSecrets.containsKey("project_id"));
     	}
         
       //  System.out.println("clientSecrets="+clientSecrets.toPrettyString());
@@ -203,7 +165,7 @@ public class QuickstartV3 {
         
         Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
         
-        System.out.println("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+        //System.out.println("Credentials saved to " + DATA_STORE_DIR1.getAbsolutePath());
         
     	if (log.isDebugEnabled()) {
       	   log.debug(mName+" Ends");
@@ -237,8 +199,8 @@ public class QuickstartV3 {
        	   log.debug(mName+" Starts");
        	}
 
-    	about("fncserver");
-    	listFiles("fncserver");
+    	about(GDRIVE_USER);
+    	listFiles(GDRIVE_USER);
     	//emptyTrash("fncserver");
     	
 
@@ -251,7 +213,7 @@ public class QuickstartV3 {
     public static GdriveResult listFiles(String user) throws IOException, GdriveException {
     	String mName="listFiles";
     	if (log.isDebugEnabled()) {
-            log.debug(mName+" Starts");
+            log.debug(mName+" Starts, user="+user);
          }
     	
     	GdriveResult gdriveResult = new GdriveResult();
@@ -268,7 +230,7 @@ public class QuickstartV3 {
         
         Integer pageSize=99;
         
-        //FileList result = service.files().list().setPageSize(pageSize).setQ(searchQuery).setFields("nextPageToken, files(id, name)").execute();
+        FileList result = service.files().list().setPageSize(pageSize).setQ(searchQuery).setFields("nextPageToken, files(id, name)").execute();
         
         StringBuilder fields = new StringBuilder();
         fields.append("id");
@@ -280,7 +242,7 @@ public class QuickstartV3 {
         
         //id, name, trashed, description, kind
         
-        FileList result = service.files().list().setPageSize(pageSize).setFields("nextPageToken, files("+fields.toString()+")").execute();
+        //FileList result = service.files().list().setPageSize(pageSize).setFields("nextPageToken, files("+fields.toString()+")").execute();
         
         
         List<File> files = result.getFiles();
@@ -301,10 +263,12 @@ public class QuickstartV3 {
         }
         
     	if (log.isDebugEnabled()) {
-            log.debug(mName+" Ends");
+            log.debug(mName+" Ends, ");
+            //log.debug(mName+" Ends, file count="+result.size());
          }
     	
     	gdriveResult.setResultMessage("list files was successful");
+    	
     	return gdriveResult;
     }
     
@@ -351,6 +315,10 @@ public class QuickstartV3 {
         
         System.out.println(about.toPrettyString());
         //System.out.println(o.toString());
+        
+        //gdriveResult.setOuput(about.toString());
+        gdriveResult.setOutput(about.toString());
+        
         
     	if (log.isDebugEnabled()) {
        	   log.debug(mName+" Ends");

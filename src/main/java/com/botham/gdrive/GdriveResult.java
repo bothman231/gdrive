@@ -6,14 +6,26 @@ public class GdriveResult {
 
 	}
 	
+	private String resultMessage = "";
+	private String output = "";
 	
-	
-	
+	public String getOutput() {
+		return output;
+	}
+
+
+
+	public void setOutput(String output) {
+		this.output = output;
+	}
+
+
+
 	public GdriveResult(String resultMessage) {
        this.resultMessage=resultMessage;
 	}
 
-	private String resultMessage = "";
+
 
 	public String getResultMessage() {
 		return resultMessage;
