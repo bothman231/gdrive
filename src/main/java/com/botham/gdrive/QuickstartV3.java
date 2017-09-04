@@ -40,10 +40,10 @@ public class QuickstartV3 {
     /** Directory to store user credentials for this application. */
     private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/"+GDRIVE_USER);
     
-    private static final java.io.File DATA_STORE_DIR1 = new java.io.File(System.getProperty("user.home"), ".credentials/"+GDRIVE_USER);
+    //private static final java.io.File DATA_STORE_DIR1 = new java.io.File(System.getProperty("user.home"), ".credentials/"+GDRIVE_USER);
 
     /** Global instance of the {@link FileDataStoreFactory}. */
-    private static FileDataStoreFactory DATA_STORE_FACTORY;
+    public static FileDataStoreFactory DATA_STORE_FACTORY;
 
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -62,7 +62,9 @@ public class QuickstartV3 {
    
     
 	public static void dataStore(String user) {
+		
 		String mName="dataStore";
+		
 		if (log.isDebugEnabled()) {
 		   log.debug(mName+" Starts, user="+user);
 		}
@@ -96,7 +98,7 @@ public class QuickstartV3 {
 			DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR1);
 
 			if (log.isDebugEnabled()) {
-				log.debug(mName + " Ends");
+				log.debug(mName + " Ends, DATA_STORE_FACTORY="+DATA_STORE_FACTORY);
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -157,12 +159,24 @@ public class QuickstartV3 {
         //clientSecrets.
 
         // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow =
-                new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+    	log.error(mName+" DATA_STORE_FACTORY="+DATA_STORE_FACTORY);
+    	
+    	GoogleAuthorizationCodeFlow flow = null;
+    			
+    	try {
+           flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
                 .setDataStoreFactory(DATA_STORE_FACTORY)
                 .setAccessType("offline")
                 .build();
+           
+    	} catch (Exception e) {
+    		log.error(mName+" "+e.getMessage());
+    	}
         
+    	if (log.isDebugEnabled()) {
+    		log.debug(mName+" after flow");
+    	}
+    	
         Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
         
         //System.out.println("Credentials saved to " + DATA_STORE_DIR1.getAbsolutePath());
@@ -188,7 +202,7 @@ public class QuickstartV3 {
         Credential credential = authorize(user);
         
     	if (log.isDebugEnabled()) {
-      	   log.debug(mName+" Ends");
+      	   log.debug(mName+" Ends, credential="+credential.toString());
       	}
         return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
     }
@@ -196,11 +210,13 @@ public class QuickstartV3 {
     public static void main(String[] args) throws IOException, GdriveException {
     	String mName="main";
     	if (log.isDebugEnabled()) {
-       	   log.debug(mName+" Starts");
+       	   log.debug(mName+" Starts, user="+GDRIVE_USER);
        	}
 
     	about(GDRIVE_USER);
+    	
     	listFiles(GDRIVE_USER);
+    	
     	//emptyTrash("fncserver");
     	
 
@@ -218,6 +234,8 @@ public class QuickstartV3 {
     	
     	GdriveResult gdriveResult = new GdriveResult();
     	
+    	dataStore(user);
+    	
     	//newsclips2017-08-16_2330.zip
     	
         // Build a new authorized API client service.
@@ -227,11 +245,19 @@ public class QuickstartV3 {
         
 // Example, search for 1 file....        
         String searchQuery="name='newsclips2017-08-16_2330.zip'";
+        searchQuery="";
         
         Integer pageSize=99;
+       
+    	if (log.isDebugEnabled()) {
+           log.debug(mName+" Before ex");
+        }
+    	
+        //FileList result = service.files().list().setPageSize(pageSize).setQ(searchQuery).setFields("nextPageToken, files(id, name)").execute();
+    	
+        //FileList result = service.files().list().setPageSize(pageSize).setFields("nextPageToken, files()").execute();
         
-        FileList result = service.files().list().setPageSize(pageSize).setQ(searchQuery).setFields("nextPageToken, files(id, name)").execute();
-        
+      
         StringBuilder fields = new StringBuilder();
         fields.append("id");
         fields.append(", name");
@@ -242,12 +268,17 @@ public class QuickstartV3 {
         
         //id, name, trashed, description, kind
         
-        //FileList result = service.files().list().setPageSize(pageSize).setFields("nextPageToken, files("+fields.toString()+")").execute();
-        
+        FileList result = service.files().list().setPageSize(pageSize).setFields("nextPageToken, files("+fields.toString()+")").execute();
+    	if (log.isDebugEnabled()) {
+            log.debug(mName+" After ex");
+         }  
         
         List<File> files = result.getFiles();
         
-        
+    	if (log.isDebugEnabled()) {
+            log.debug(mName+" Before files check");
+        } 
+    	
         if (files == null || files.size() == 0) {
             System.out.println("No files found.");
         } else {
@@ -280,6 +311,8 @@ public class QuickstartV3 {
     	
     	GdriveResult gdriveResult = new GdriveResult();
     	
+    	dataStore(user);
+    	
         Drive service = getDriveService(user);
         
         service.files().emptyTrash().execute();
@@ -302,7 +335,7 @@ public class QuickstartV3 {
     	String mName="about";
     	
     	if (log.isDebugEnabled()) {
-      	   log.debug(mName+" Starts");
+      	   log.debug(mName+" Starts, user="+user);
       	}
     	
     	GdriveResult gdriveResult = new GdriveResult();
