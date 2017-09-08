@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Logger;
 
-
 public class QuickstartV3 {
 	
 	static Logger log = Logger.getLogger(QuickstartV3.class.getName());
