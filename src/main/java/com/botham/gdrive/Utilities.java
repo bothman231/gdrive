@@ -23,9 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Logger;
 
-public class QuickstartV3 {
+public class Utilities {
 	
-	static Logger log = Logger.getLogger(QuickstartV3.class.getName());
+	static Logger log = Logger.getLogger(Utilities.class.getName());
 	
     
     private static final String APPLICATION_NAME = "Drive API Java Quickstart";
@@ -107,11 +107,7 @@ public class QuickstartV3 {
 
     
     
-    /**
-     * Creates an authorized Credential object.
-     * @return an authorized Credential object.
-     * @throws IOException
-     */
+
     public static Credential authorize(String user) throws IOException, GdriveException {
     	String mName="authorize";
     	
@@ -129,9 +125,11 @@ public class QuickstartV3 {
     		log.debug(mName+" Loading client secs from "+jsonFile);
     	}
     	
-    	//java.io.File file = new java.io.File(jsonFile);
     	
     	/*
+    	java.io.File file = new java.io.File(jsonFile);
+    	
+    	
     	if (file.exists()) {
     		
     	} else {
@@ -139,13 +137,17 @@ public class QuickstartV3 {
     	}
     	*/
     	
-        InputStream in = QuickstartV3.class.getResourceAsStream(jsonFile);
+    	
+        InputStream in = Utilities.class.getResourceAsStream(jsonFile);
         
     	if (log.isDebugEnabled()) {
     		log.debug(mName+" in="+in);
     	}
         
-        
+    	if (in==null) {
+    		throw new GdriveException("No credentials exist for user: "+user);
+    	}
+    	
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
         
         
@@ -158,7 +160,9 @@ public class QuickstartV3 {
         //clientSecrets.
 
         // Build flow and trigger user authorization request.
-    	log.error(mName+" DATA_STORE_FACTORY="+DATA_STORE_FACTORY);
+    	if (log.isErrorEnabled()) {
+    		log.error(mName+" DATA_STORE_FACTORY="+DATA_STORE_FACTORY);
+    	}
     	
     	GoogleAuthorizationCodeFlow flow = null;
     			
@@ -226,6 +230,7 @@ public class QuickstartV3 {
     }
     	
     public static GdriveResult listFiles(String user) throws IOException, GdriveException {
+    	
     	String mName="listFiles";
     	if (log.isDebugEnabled()) {
             log.debug(mName+" Starts, user="+user);
@@ -268,14 +273,15 @@ public class QuickstartV3 {
         //id, name, trashed, description, kind
         
         FileList result = service.files().list().setPageSize(pageSize).setFields("nextPageToken, files("+fields.toString()+")").execute();
+        
     	if (log.isDebugEnabled()) {
-            log.debug(mName+" After ex");
-         }  
+           log.debug(mName+" After ex");
+        }  
         
         List<File> files = result.getFiles();
         
     	if (log.isDebugEnabled()) {
-            log.debug(mName+" Before files check");
+           log.debug(mName+" Before files check");
         } 
     	
         if (files == null || files.size() == 0) {
@@ -297,7 +303,9 @@ public class QuickstartV3 {
             //log.debug(mName+" Ends, file count="+result.size());
          }
     	
-    	gdriveResult.setResultMessage("list files was successful");
+    	gdriveResult.setResultMessage("List files was successful");
+    	gdriveResult.setFiles(files);
+    	gdriveResult.setOutput("");
     	
     	return gdriveResult;
     }
@@ -330,6 +338,10 @@ public class QuickstartV3 {
         return gdriveResult;
     }
     
+    
+    
+    
+    
     public static GdriveResult about(String user) throws IOException, GdriveException {
     	String mName="about";
     	
@@ -345,19 +357,22 @@ public class QuickstartV3 {
         
         About about = service.about().get().setFields("user, storageQuota").execute();
         
-        System.out.println(about.toPrettyString());
+        //System.out.println(mName+" toPrettyString="+about.toPrettyString());
         //System.out.println(o.toString());
         
         //gdriveResult.setOuput(about.toString());
-        gdriveResult.setOutput(about.toString());
+        gdriveResult.setOutput("");
         
         
     	if (log.isDebugEnabled()) {
        	   log.debug(mName+" Ends");
        	}
     	
-    	gdriveResult.setResultMessage("about was successful");
-        return gdriveResult;
+    	gdriveResult.setResultMessage("About was successful");
+    	gdriveResult.setAbout(about);
+    	
+    	return gdriveResult;
+        
     }
 
 }
