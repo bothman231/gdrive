@@ -33,6 +33,7 @@ public class Utilities {
     
     //private static final String GDRIVE_USER = "fncserver";
     //private static final String GDRIVE_USER = "231saleln";
+    //private static final String GDRIVE_USER = "sbotham1968";
     private static final String GDRIVE_USER = "kryten4813";
     //private static final String GDRIVE_USER = "petersen4813";
     //private static final String GDRIVE_USER = "bluemidget4813";
@@ -58,7 +59,8 @@ public class Utilities {
      */
     private static final List<String> SCOPES = Arrays.asList(DriveScopes.DRIVE);
     
-    private static final boolean DELETE_STORE = false;
+    //private static final boolean DELETE_STORE = false;
+    private static final boolean DELETE_STORE = true;
    
     
 	public static void dataStore(String user) {
@@ -127,16 +129,17 @@ public class Utilities {
     	}
     	
     	
-    	/*
+    	
     	java.io.File file = new java.io.File(jsonFile);
     	
+    	log.debug(mName+" "+file.getAbsolutePath());
     	
     	if (file.exists()) {
     		
     	} else {
     		throw new GdriveException("No credentials exist for user: "+user);
     	}
-    	*/
+    	
     	
     	
         InputStream in = Utilities.class.getResourceAsStream(jsonFile);
@@ -211,8 +214,14 @@ public class Utilities {
         return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
     }
 
+    
+    
+    
+    
     public static void main(String[] args) throws IOException, GdriveException {
+    	
     	String mName="main";
+    	
     	if (log.isDebugEnabled()) {
        	   log.debug(mName+" Starts, user="+GDRIVE_USER);
        	}
